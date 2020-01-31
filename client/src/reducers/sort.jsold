@@ -1,0 +1,132 @@
+/* import { Component } from 'react'; */
+const { Component } = React;
+
+/* import { render } from 'react-dom'; */
+const { render } = ReactDOM;
+
+/* import { createStore, combineReducers } from 'redux'; */
+const { createStore, combineReducers } = Redux;
+
+/* import { connect, Provider } from 'react-redux'; */
+const { connect, Provider } = ReactRedux;
+
+const App = connect((state, ownProps) => {
+  return {
+    records: state.records,
+    sortedBy: state.sortedBy,
+  };
+}, (dispatch, ownProps) => {
+  return {
+    onSortByName: () => {
+      dispatch({
+        type: 'SORT_BY_NAME',
+      });
+    },
+    onSortByScore: () => {
+      dispatch({
+        type: 'SORT_BY_SCORE',
+      });
+    },
+  };
+})(({
+  // @type {Array.<Object>}
+  records = [],
+  sortedBy = "name",
+  onSortByName = () => {},
+  onSortByScore = () => {},
+}) => (
+  <div>
+    <table>
+      <thead>
+        <tr>
+          <td>
+            <label>Name</label>
+            <button
+              onClick={onSortByName}
+              disabled={sortedBy === 'name'}
+            >sort</button>
+          </td>
+          <td>
+            <label>Score</label>
+            <button
+              onClick={onSortByScore}
+              disabled={sortedBy === 'score'}
+            >sort</button>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        {records.map((rec, index) => (
+          <tr>
+            <td>{rec.name}</td>
+            <td>{rec.score}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+));
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case '@@redux/INIT':
+      // Initialize with sorting by name.
+    case 'SORT_BY_NAME':
+      return {
+        ...state,
+        
+        sortedBy: 'name',
+        records: state.records.slice().sort((a, b) => {
+          if (a.name < b.name) {
+            return -1;
+          } else if (a.name > b.name) {
+            return 1;
+          } else {
+            return 0;
+          }
+        }),
+      };
+      break;
+    case 'SORT_BY_SCORE':
+      return {
+        ...state,
+        
+        sortedBy: 'score',
+        records: state.records.slice().sort((a, b) => a.score - b.score),
+      };
+      break;
+    default:
+      // Do nothing.
+      return state;
+  }
+};
+
+const initialState = {
+  records: [
+    {
+      name: 'Foo',
+      score: 100,
+    },
+    {
+      name: 'Bar',
+      score: 200,
+    },
+    {
+      name: 'Apple',
+      score: 150,
+    },
+    {
+      name: 'Jam',
+      score: 110,
+    },
+  ],
+  sortedBy: "name",
+};
+const store = createStore(reducer, initialState);
+
+const rootEl = document.getElementById('root');
+
+ReactDOM.render(
+  <Sort store={store} />,
+  rootEl
+);
