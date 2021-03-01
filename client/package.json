@@ -31,7 +31,7 @@
 		"redux": "^4.0.1",
 		"redux-form": "^7.4.2",
 		"redux-thunk": "^2.3.0",
-		"three": "^0.112.1",
+		"three": "^0.125.0",
 		"three-orbitcontrols": "^2.110.3"
 	},
 	"scripts": {
